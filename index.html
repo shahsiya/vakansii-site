@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Вакансии из Турции</title>
+	<style>
+		body {
+			font-family: Arial, sans-serif;
+			padding: 20px;
+			background-color: #f4f4f4;
+		}
+
+		h1 {
+			text-align: center;
+		}
+
+		.job {
+			background: white;
+			margin: 10px 0;
+			padding: 15px;
+			border-radius: 8px;
+			box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+		}
+
+		.job h3 {
+			margin: 0 0 5px;
+		}
+
+		.job a {
+			color: #007BFF;
+			text-decoration: none;
+		}
+
+		.job a:hover {
+			text-decoration: underline;
+		}
+	</style>
+</head>
+
+<body>
+	<h1>Вакансии из Турции</h1>
+	<div id="job-list"></div>
+
+	<!-- Firebase SDKs -->
+	<script type="module">
+		import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-app.js";
+		import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
+
+		const firebaseConfig = {
+			apiKey: "AIzaSyDslmTQU5CCDlBRFWLwqIaGW3HLFnGhTIg",
+			authDomain: "vakansii-turkey.firebaseapp.com",
+			projectId: "vakansii-turkey",
+			storageBucket: "vakansii-turkey.appspot.com",
+			messagingSenderId: "41794264957",
+			appId: "1:41794264957:web:4f731aea57c51d24ec7614"
+		};
+
+		const app = initializeApp(firebaseConfig);
+		const db = getFirestore(app);
+
+		const jobList = document.getElementById("job-list");
+
+		async function loadJobs() {
+			const querySnapshot = await getDocs(collection(db, "jobs"));
+			querySnapshot.forEach((doc) => {
+				const job = doc.data();
+				const div = document.createElement("div");
+				div.className = "job";
+				div.innerHTML = `
+          <h3>${job.title}</h3>
+          <p>${job.description}</p>
+          <a href="${job.url}" target="_blank">Подробнее</a>
+        `;
+				jobList.appendChild(div);
+			});
+		}
+
+		loadJobs();
+	</script>
+</body>
+
+</html>
