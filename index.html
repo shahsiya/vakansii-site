@@ -17,9 +17,6 @@
       font-size: 1.2em;
       margin-bottom: 8px;
     }
-    .vacancy-desc {
-      margin-bottom: 8px;
-    }
     .vacancy-link {
       color: #007bff;
       text-decoration: none;
@@ -41,7 +38,6 @@
       appId: "1:41794264957:web:4f731aea57c51d24ec7614"
     };
 
-    // Инициализация Firebase
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
@@ -50,8 +46,8 @@
       vacanciesContainer.innerHTML = '<p>Загрузка вакансий...</p>';
 
       try {
-        const querySnapshot = await getDocs(collection(db, "vacancies"));
-        vacanciesContainer.innerHTML = ''; // очистить контейнер
+        const querySnapshot = await getDocs(collection(db, "vakansii"));
+        vacanciesContainer.innerHTML = ''; // очистить
 
         if (querySnapshot.empty) {
           vacanciesContainer.innerHTML = '<p>Вакансий пока нет.</p>';
@@ -64,13 +60,13 @@
           card.className = 'vacancy-card';
 
           card.innerHTML = `
-            <div class="vacancy-title">${vacancy.title || 'Без названия'}</div>
-            <div class="vacancy-desc">${vacancy.description || ''}</div>
-            ${vacancy.link ? `<a href="${vacancy.link}" target="_blank" class="vacancy-link">Подробнее</a>` : ''}
+            <div class="vacancy-title">${vacancy.title_ru || 'Без названия'}</div>
+            ${vacancy.url ? `<a href="${vacancy.url}" target="_blank" class="vacancy-link">Подробнее</a>` : ''}
           `;
 
           vacanciesContainer.appendChild(card);
         });
+
       } catch (error) {
         vacanciesContainer.innerHTML = `<p>Ошибка загрузки: ${error.message}</p>`;
       }
