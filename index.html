@@ -17,6 +17,9 @@
       font-size: 1.2em;
       margin-bottom: 8px;
     }
+    .vacancy-desc {
+      margin-bottom: 8px;
+    }
     .vacancy-link {
       color: #007bff;
       text-decoration: none;
@@ -46,8 +49,8 @@
       vacanciesContainer.innerHTML = '<p>Загрузка вакансий...</p>';
 
       try {
-        const querySnapshot = await getDocs(collection(db, "vakansii"));
-        vacanciesContainer.innerHTML = ''; // очистить
+        const querySnapshot = await getDocs(collection(db, "vacancies"));  // <-- именно "vacancies"
+        vacanciesContainer.innerHTML = ''; // очистить контейнер
 
         if (querySnapshot.empty) {
           vacanciesContainer.innerHTML = '<p>Вакансий пока нет.</p>';
@@ -60,7 +63,8 @@
           card.className = 'vacancy-card';
 
           card.innerHTML = `
-            <div class="vacancy-title">${vacancy.title_ru || 'Без названия'}</div>
+            <div class="vacancy-title">${vacancy.title_ru || vacancy.title || 'Без названия'}</div>
+            <div class="vacancy-desc">${vacancy.description || vacancy.title_tr || ''}</div>
             ${vacancy.url ? `<a href="${vacancy.url}" target="_blank" class="vacancy-link">Подробнее</a>` : ''}
           `;
 
