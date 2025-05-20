@@ -1,84 +1,84 @@
 <!DOCTYPE html>
 <html lang="ru">
-
 <head>
-	<meta charset="UTF-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title>Вакансии из Турции</title>
-	<style>
-		body {
-			font-family: Arial, sans-serif;
-			padding: 20px;
-			background-color: #f4f4f4;
-		}
+  <meta charset="UTF-8" />
+  <title>Вакансии из Firebase Firestore</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    .vacancy-card {
+      border: 1px solid #ddd;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .vacancy-title {
+      font-weight: bold;
+      font-size: 1.2em;
+      margin-bottom: 8px;
+    }
+    .vacancy-desc {
+      margin-bottom: 8px;
+    }
+    .vacancy-link {
+      color: #007bff;
+      text-decoration: none;
+    }
+    .vacancy-link:hover {
+      text-decoration: underline;
+    }
+  </style>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-app.js";
+    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
 
-		h1 {
-			text-align: center;
-		}
+    const firebaseConfig = {
+      apiKey: "AIzaSyDslmTQU5CCDlBRFWLwqIaGW3HLFnGhTIg",
+      authDomain: "vakansii-turkey.firebaseapp.com",
+      projectId: "vakansii-turkey",
+      storageBucket: "vakansii-turkey.appspot.com",
+      messagingSenderId: "41794264957",
+      appId: "1:41794264957:web:4f731aea57c51d24ec7614"
+    };
 
-		.job {
-			background: white;
-			margin: 10px 0;
-			padding: 15px;
-			border-radius: 8px;
-			box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-		}
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-		.job h3 {
-			margin: 0 0 5px;
-		}
+    async function loadVacancies() {
+      const vacanciesContainer = document.getElementById('vacancies');
+      vacanciesContainer.innerHTML = '<p>Загрузка вакансий...</p>';
 
-		.job a {
-			color: #007BFF;
-			text-decoration: none;
-		}
+      try {
+        const querySnapshot = await getDocs(collection(db, "vakansii"));
+        vacanciesContainer.innerHTML = ''; // очистить
 
-		.job a:hover {
-			text-decoration: underline;
-		}
-	</style>
+        querySnapshot.forEach((doc) => {
+          const vacancy = doc.data();
+          const card = document.createElement('div');
+          card.className = 'vacancy-card';
+
+          card.innerHTML = `
+            <div class="vacancy-title">${vacancy.title || 'Без названия'}</div>
+            <div class="vacancy-desc">${vacancy.description || ''}</div>
+            ${vacancy.link ? `<a href="${vacancy.link}" target="_blank" class="vacancy-link">Подробнее</a>` : ''}
+          `;
+
+          vacanciesContainer.appendChild(card);
+        });
+
+        if (querySnapshot.empty) {
+          vacanciesContainer.innerHTML = '<p>Вакансий пока нет.</p>';
+        }
+      } catch (error) {
+        vacanciesContainer.innerHTML = `<p>Ошибка загрузки: ${error.message}</p>`;
+      }
+    }
+
+    window.onload = loadVacancies;
+  </script>
 </head>
-
 <body>
-	<h1>Вакансии из Турции</h1>
-	<div id="job-list"></div>
-
-	<!-- Firebase SDKs -->
-	<script type="module">
-		import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-app.js";
-		import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
-
-		const firebaseConfig = {
-			apiKey: "AIzaSyDslmTQU5CCDlBRFWLwqIaGW3HLFnGhTIg",
-			authDomain: "vakansii-turkey.firebaseapp.com",
-			projectId: "vakansii-turkey",
-			storageBucket: "vakansii-turkey.appspot.com",
-			messagingSenderId: "41794264957",
-			appId: "1:41794264957:web:4f731aea57c51d24ec7614"
-		};
-
-		const app = initializeApp(firebaseConfig);
-		const db = getFirestore(app);
-
-		const jobList = document.getElementById("job-list");
-
-		async function loadJobs() {
-			const querySnapshot = await getDocs(collection(db, "jobs"));
-			querySnapshot.forEach((doc) => {
-				const job = doc.data();
-				const div = document.createElement("div");
-				div.className = "job";
-				div.innerHTML = `
-          <h3>${job.title}</h3>
-          <p>${job.description}</p>
-          <a href="${job.url}" target="_blank">Подробнее</a>
-        `;
-				jobList.appendChild(div);
-			});
-		}
-
-		loadJobs();
-	</script>
+  <h1>Вакансии из Firestore</h1>
+  <div id="vacancies"></div>
 </body>
-
 </html>
