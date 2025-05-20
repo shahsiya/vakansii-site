@@ -5,13 +5,6 @@
   <title>Вакансии из Firebase Firestore</title>
   <style>
     body { font-family: Arial, sans-serif; margin: 20px; }
-    .vacancy-card {<!DOCTYPE html>
-<html lang="ru">
-<head>
-  <meta charset="UTF-8" />
-  <title>Вакансии из Firebase Firestore</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 20px; }
     .vacancy-card {
       border: 1px solid #ddd;
       padding: 15px;
@@ -48,85 +41,7 @@
       appId: "1:41794264957:web:4f731aea57c51d24ec7614"
     };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-  async function loadVacancies() {
-  const vacanciesContainer = document.getElementById('vacancies');
-  vacanciesContainer.innerHTML = '<p>Загрузка вакансий...</p>';
-
-  try {
-    const querySnapshot = await getDocs(collection(db, "vacancies"));
-    vacanciesContainer.innerHTML = ''; // очистить
-
-    if (querySnapshot.empty) {
-      vacanciesContainer.innerHTML = '<p>Вакансий пока нет.</p>';
-      return;
-    }
-
-    querySnapshot.forEach((doc) => {
-      const vacancy = doc.data();
-      const card = document.createElement('div');
-      card.className = 'vacancy-card';
-
-      card.innerHTML = `
-        <div class="vacancy-title">${vacancy.title || 'Без названия'}</div>
-        <div class="vacancy-desc">${vacancy.description || ''}</div>
-        ${vacancy.link ? `<a href="${vacancy.link}" target="_blank" class="vacancy-link">Подробнее</a>` : ''}
-      `;
-
-      vacanciesContainer.appendChild(card);
-    });
-  } catch (error) {
-    vacanciesContainer.innerHTML = `<p>Ошибка загрузки: ${error.message}</p>`;
-  }
-}
-
-
-    window.onload = loadVacancies;
-  </script>
-</head>
-<body>
-  <h1>Вакансии из Firestore</h1>
-  <div id="vacancies"></div>
-</body>
-</html>
-
-      border: 1px solid #ddd;
-      padding: 15px;
-      margin-bottom: 15px;
-      border-radius: 5px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-    .vacancy-title {
-      font-weight: bold;
-      font-size: 1.2em;
-      margin-bottom: 8px;
-    }
-    .vacancy-desc {
-      margin-bottom: 8px;
-    }
-    .vacancy-link {
-      color: #007bff;
-      text-decoration: none;
-    }
-    .vacancy-link:hover {
-      text-decoration: underline;
-    }
-  </style>
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-app.js";
-    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyDslmTQU5CCDlBRFWLwqIaGW3HLFnGhTIg",
-      authDomain: "vakansii-turkey.firebaseapp.com",
-      projectId: "vakansii-turkey",
-      storageBucket: "vakansii-turkey.appspot.com",
-      messagingSenderId: "41794264957",
-      appId: "1:41794264957:web:4f731aea57c51d24ec7614"
-    };
-
+    // Инициализация Firebase
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
@@ -135,8 +50,13 @@
       vacanciesContainer.innerHTML = '<p>Загрузка вакансий...</p>';
 
       try {
-        const querySnapshot = await getDocs(collection(db, "vakansii"));
-        vacanciesContainer.innerHTML = ''; // очистить
+        const querySnapshot = await getDocs(collection(db, "vacancies"));
+        vacanciesContainer.innerHTML = ''; // очистить контейнер
+
+        if (querySnapshot.empty) {
+          vacanciesContainer.innerHTML = '<p>Вакансий пока нет.</p>';
+          return;
+        }
 
         querySnapshot.forEach((doc) => {
           const vacancy = doc.data();
@@ -151,10 +71,6 @@
 
           vacanciesContainer.appendChild(card);
         });
-
-        if (querySnapshot.empty) {
-          vacanciesContainer.innerHTML = '<p>Вакансий пока нет.</p>';
-        }
       } catch (error) {
         vacanciesContainer.innerHTML = `<p>Ошибка загрузки: ${error.message}</p>`;
       }
