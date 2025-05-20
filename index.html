@@ -51,35 +51,37 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    async function loadVacancies() {
-      const vacanciesContainer = document.getElementById('vacancies');
-      vacanciesContainer.innerHTML = '<p>Загрузка вакансий...</p>';
+  async function loadVacancies() {
+  const vacanciesContainer = document.getElementById('vacancies');
+  vacanciesContainer.innerHTML = '<p>Загрузка вакансий...</p>';
 
-      try {
-        const querySnapshot = await getDocs(collection(db, "vakansii"));
-        vacanciesContainer.innerHTML = ''; // очистить
+  try {
+    const querySnapshot = await getDocs(collection(db, "vacancies"));
+    vacanciesContainer.innerHTML = ''; // очистить
 
-        querySnapshot.forEach((doc) => {
-          const vacancy = doc.data();
-          const card = document.createElement('div');
-          card.className = 'vacancy-card';
-
-          card.innerHTML = `
-            <div class="vacancy-title">${vacancy.title || 'Без названия'}</div>
-            <div class="vacancy-desc">${vacancy.description || ''}</div>
-            ${vacancy.link ? `<a href="${vacancy.link}" target="_blank" class="vacancy-link">Подробнее</a>` : ''}
-          `;
-
-          vacanciesContainer.appendChild(card);
-        });
-
-        if (querySnapshot.empty) {
-          vacanciesContainer.innerHTML = '<p>Вакансий пока нет.</p>';
-        }
-      } catch (error) {
-        vacanciesContainer.innerHTML = `<p>Ошибка загрузки: ${error.message}</p>`;
-      }
+    if (querySnapshot.empty) {
+      vacanciesContainer.innerHTML = '<p>Вакансий пока нет.</p>';
+      return;
     }
+
+    querySnapshot.forEach((doc) => {
+      const vacancy = doc.data();
+      const card = document.createElement('div');
+      card.className = 'vacancy-card';
+
+      card.innerHTML = `
+        <div class="vacancy-title">${vacancy.title || 'Без названия'}</div>
+        <div class="vacancy-desc">${vacancy.description || ''}</div>
+        ${vacancy.link ? `<a href="${vacancy.link}" target="_blank" class="vacancy-link">Подробнее</a>` : ''}
+      `;
+
+      vacanciesContainer.appendChild(card);
+    });
+  } catch (error) {
+    vacanciesContainer.innerHTML = `<p>Ошибка загрузки: ${error.message}</p>`;
+  }
+}
+
 
     window.onload = loadVacancies;
   </script>
