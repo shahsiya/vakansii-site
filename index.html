@@ -17,7 +17,9 @@
       font-size: 1.2em;
       margin-bottom: 8px;
     }
-    .vacancy-desc {
+    .vacancy-info {
+      font-size: 0.9em;
+      color: #555;
       margin-bottom: 8px;
     }
     .vacancy-link {
@@ -49,8 +51,8 @@
       vacanciesContainer.innerHTML = '<p>Загрузка вакансий...</p>';
 
       try {
-        const querySnapshot = await getDocs(collection(db, "vacancies"));  // <-- именно "vacancies"
-        vacanciesContainer.innerHTML = ''; // очистить контейнер
+        const querySnapshot = await getDocs(collection(db, "vacancies"));
+        vacanciesContainer.innerHTML = '';
 
         if (querySnapshot.empty) {
           vacanciesContainer.innerHTML = '<p>Вакансий пока нет.</p>';
@@ -59,12 +61,29 @@
 
         querySnapshot.forEach((doc) => {
           const vacancy = doc.data();
+
+          // Форматируем дату, если есть
+          let formattedDate = '';
+          if (vacancy.date) {
+            const d = new Date(vacancy.date);
+            if (!isNaN(d)) {
+              formattedDate = d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
+            } else {
+              formattedDate = vacancy.date; // если дата в текстовом формате (например "Bugün")
+            }
+          }
+
           const card = document.createElement('div');
           card.className = 'vacancy-card';
 
           card.innerHTML = `
             <div class="vacancy-title">${vacancy.title_ru || vacancy.title || 'Без названия'}</div>
-            <div class="vacancy-desc">${vacancy.description || vacancy.title_tr || ''}</div>
+            <div class="vacancy-info">
+              <strong>Город:</strong> ${vacancy.city || 'Не указан'}<br/>
+              <strong>Компания:</strong> ${vacancy.company || 'Не указана'}<br/>
+              <strong>Дата публикации:</strong> ${formattedDate || 'Не указана'}<br/>
+              <strong>Источник:</strong> ${vacancy.source || 'Неизвестно'}
+            </div>
             ${vacancy.url ? `<a href="${vacancy.url}" target="_blank" class="vacancy-link">Подробнее</a>` : ''}
           `;
 
